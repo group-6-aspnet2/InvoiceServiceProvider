@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+option csharp_namespace = "Presentation";
+package invoice;
+
+service InvoiceGrpcService {
+	rpc CreateInvoice (CreateInvoiceRequest) returns (CreateInvoiceReply);
+	rpc GetInvoices (GetInvoicesRequest) returns (GetInvoicesReply);
+	rpc GetInvoiceById (GetInvoiceByIdRequest) returns (GetInvoiceByIdReply);
+	rpc UpdateInvoiceById (UpdateInvoiceByIdRequest) returns (UpdateInvoiceByIdReply);
+	rpc DeleteInvoiceById (DeleteInvoiceByIdRequest) returns (DeleteInvoiceByIdReply);
+
+	rpc SendInvoice (SendInvoiceRequest) returns (SendInvoiceReply);
+	rpc HoldInvoice (HoldInvoiceRequest) returns (HoldInvoiceReply);
+	rpc MarkInvoicePaid (UpdateInvoiceStatusRequest) returns (UpdateInvoiceStatusReply);
+	rpc MarkInvoiceUnpaid (UpdateInvoiceStatusRequest) returns (UpdateInvoiceStatusReply);
+}
+
+message Invoice {
+	string invoice_id = 1;
+	string bill_from = 2;
+	string bill_to = 3;
+	string ussued_date = 4;
+	string due_date = 5;
+	repeated TicketDetail ticket_details = 6;
+	double total = 7;
+	string status = 8;
+}
+
+message TicketDetail {
+	string category = 1;
+	double price = 2;
+	int32 quantity = 3;
+	double amount = 4;
+}
+
+message CreateInvoiceRequest {
+	Invoice invoice = 1;
+}
+
+message CreateInvoiceReply {
+	bool succeeded = 1;
+	string message = 2;
+	string inovice_id = 3;
+}
+
+message GetInvoicesRequest {}
+
+message GetInvoicesReply {
+	bool succeeded = 1;
+	string message = 2;
+	repeated Invoice invoices = 3;
+}
+
+message GetInvoiceByIdRequest {
+	string invoice_id = 1;
+}
+
+message GetInvoiceByIdReply {
+	bool succeeded = 1;
+	string message = 2;
+	Invoice invoice = 3;
+}
+
+message UpdateInvoiceByIdRequest {
+	string inovice_id = 1;
+	Invoice invoice = 2;
+}
+
+message UpdateInvoiceByIdReply {
+	bool succeeded = 1;
+	string message = 2;
+}
+
+message DeleteInvoiceByIdRequest {
+	string invoice_id = 1;
+}
+
+message DeleteInvoiceByIdReply {
+	bool succeeded = 1;
+	string message = 2;
+}
+
+message SendInvoiceRequest {
+	string invoice_id = 1;
+}
+
+message SendInvoiceReply {
+	bool succeeded = 1;
+	string message = 2;
+}
+
+message HoldInvoicerequest {
+	string invoice_id = 1;
+}
+
+message HoldInvoiceReply {
+	bool succeeded = 1;
+	string message = 2;
+}
+
+message UpdateInvoiceStatusRequest {
+	string invoice_id = 1;
+}
+
+message UpdateInvoiceStatusReply {
+	bool succeeded = 1;
+	string message = 2;
+}
