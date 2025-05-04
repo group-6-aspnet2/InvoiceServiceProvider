@@ -20,7 +20,7 @@ message Invoice {
 	string invoice_id = 1;
 	string bill_from = 2;
 	string bill_to = 3;
-	string ussued_date = 4;
+	string issued_date = 4;
 	string due_date = 5;
 	repeated TicketDetail ticket_details = 6;
 	double total = 7;
