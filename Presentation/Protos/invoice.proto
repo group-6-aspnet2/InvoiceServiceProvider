@@ -28,7 +28,7 @@ message Invoice {
 }
 
 message TicketDetail {
-	string category = 1;
+	string ticket_category = 1;
 	double price = 2;
 	int32 quantity = 3;
 	double amount = 4;
