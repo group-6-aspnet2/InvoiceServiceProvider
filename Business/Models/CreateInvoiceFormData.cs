@@ -1,8 +1,7 @@
-﻿namespace Domain.Models;
+﻿namespace Business.Models;
 
-public class Invoice
+public class CreateInvoiceFormData
 {
-    public string Id { get; set; } = null!;
     public string InvoiceNumber { get; set; } = null!;
     public DateTime IssuedDate { get; set; }
     public DateTime DueDate { get; set; }
@@ -17,10 +16,5 @@ public class Invoice
     public string BillToEmail { get; set; } = null!;
     public string BillToPhone { get; set; } = null!;
 
-    public int InvoiceStatusId { get; set; }
-    public string InvoiceStatus { get; set; } = null!;
-
-    public List<InvoiceItem> Items { get; set; } = [];
-
-    public decimal Total => Items?.Sum(i => i.Amount) ?? 0;
+    public List<InvoiceItemFormData> Items { get; set; } = [];
 }

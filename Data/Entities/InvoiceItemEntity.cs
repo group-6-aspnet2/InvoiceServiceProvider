@@ -2,7 +2,7 @@
 
 public class InvoiceItemEntity
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
     public int InvoiceId { get; set; }
     public InvoiceEntity Invoice { get; set; } = null!;

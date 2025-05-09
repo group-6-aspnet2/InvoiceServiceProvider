@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace Data.Repositories;
 
-public class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity, TModel>, IBaseRepository<TEntity, TModel> where TEntity : class
+public class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity, TModel> where TEntity : class
 {
     protected readonly DataContext _context;
     protected readonly DbSet<TEntity> _table;
@@ -37,7 +37,7 @@ public class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity, TModel>,
         }
     }
 
-    public virtual async Task<RepositoryResult<IEnumerable<TModel>>> GetAllAsync(bool orderByDescending = false, Expression<Func<TEntity, object>>? sortBy = null, Expression<Func<TEntity, bool>>? where = null, int take = 0, params Expression<Func<TEntity, object>>[] includes)
+    public virtual async Task<RepositoryResult<IEnumerable<TModel>>> GetAllAsync(bool orderByDescending = false, Expression<Func<TEntity, object>>? sortBy = null, Expression<Func<TEntity, bool>>? where = null, int take = 0, Expression<Func<TEntity, object>>[]? includes = null)
     {
         try
         {
@@ -69,7 +69,7 @@ public class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity, TModel>,
         }
     }
 
-    public virtual async Task<RepositoryResult<TModel>> GetAsync(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] includes)
+    public virtual async Task<RepositoryResult<TModel>> GetAsync(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>>[]? includes = null)
     {
         try
         {
