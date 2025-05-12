@@ -8,7 +8,6 @@ service InvoiceManager {
 	rpc GetInvoices (GetInvoicesRequest) returns (GetInvoicesReply);
 	rpc GetInvoiceById (GetInvoiceByIdRequest) returns (GetInvoiceByIdReply);
 	rpc UpdateInvoiceById (UpdateInvoiceByIdRequest) returns (UpdateInvoiceByIdReply);
-	rpc DeleteInvoiceById (DeleteInvoiceByIdRequest) returns (DeleteInvoiceByIdReply);
 
 	rpc SendInvoice (SendInvoiceRequest) returns (SendInvoiceReply);
 	rpc HoldInvoice (HoldInvoiceRequest) returns (HoldInvoiceReply);
@@ -73,20 +72,11 @@ message GetInvoiceByIdReply {
 }
 
 message UpdateInvoiceByIdRequest {
-	string inovice_id = 1;
+	string invoice_id = 1;
 	Invoice invoice = 2;
 }
 
 message UpdateInvoiceByIdReply {
-	bool succeeded = 1;
-	string message = 2;
-}
-
-message DeleteInvoiceByIdRequest {
-	string invoice_id = 1;
-}
-
-message DeleteInvoiceByIdReply {
 	bool succeeded = 1;
 	string message = 2;
 }
