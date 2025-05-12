@@ -1,11 +1,16 @@
-﻿namespace Data.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Data.Entities;
 
 public class InvoiceItemEntity
 {
+    [Key]
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    public int InvoiceId { get; set; }
-    public InvoiceEntity Invoice { get; set; } = null!;
+    [ForeignKey(nameof(Invoice))]
+    public string InvoiceId { get; set; } = null!;
+    public virtual InvoiceEntity Invoice { get; set; } = null!;
 
     public string TicketCategory { get; set; } = null!;
     public decimal Price { get; set; }

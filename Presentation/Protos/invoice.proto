@@ -3,7 +3,7 @@ syntax = "proto3";
 option csharp_namespace = "Presentation";
 package invoice;
 
-service InvoiceGrpcService {
+service InvoiceManager {
 	rpc CreateInvoice (CreateInvoiceRequest) returns (CreateInvoiceReply);
 	rpc GetInvoices (GetInvoicesRequest) returns (GetInvoicesReply);
 	rpc GetInvoiceById (GetInvoiceByIdRequest) returns (GetInvoiceByIdReply);
@@ -18,13 +18,23 @@ service InvoiceGrpcService {
 
 message Invoice {
 	string invoice_id = 1;
-	string bill_from = 2;
-	string bill_to = 3;
-	string issued_date = 4;
-	string due_date = 5;
-	repeated TicketDetail ticket_details = 6;
-	double total = 7;
-	string status = 8;
+	string invoice_number = 2;
+	string issued_date = 3;
+	string due_date = 4;
+	string bill_from_name = 5;
+	string bill_from_address = 6;
+	string bill_from_email = 7;
+	string bill_from_phone = 8;
+	string bill_to_name = 9;
+	string bill_to_address = 10;
+	string bill_to_email = 11;
+	string bill_to_phone = 12;
+	repeated TicketDetail ticket_details = 13;
+	double total = 14;
+	string status = 15;
+	string user_id = 16;
+	string booking_id = 17;
+	string event_id = 18;
 }
 
 message TicketDetail {
@@ -90,7 +100,7 @@ message SendInvoiceReply {
 	string message = 2;
 }
 
-message HoldInvoicerequest {
+message HoldInvoiceRequest {
 	string invoice_id = 1;
 }
 

@@ -1,15 +1,15 @@
-﻿using Business.Models;
+﻿using Business.Interfaces;
+using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using Domain.Extensions;
 using Domain.Models;
 using Domain.Responses;
 using System.Diagnostics;
-using System.Linq.Expressions;
 
 namespace Business.Services;
 
-public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository)
+public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository) : IInvoiceService
 {
     private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
     private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
@@ -43,7 +43,10 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                     TicketCategory = i.TicketCategory,
                     Price = i.Price,
                     Quantity = i.Quantity
-                })]
+                })],
+                UserId = formData.UserId,
+                BookingId = formData.BookingId,
+                EventId = formData.EventId
             };
 
             var result = await _invoiceRepository.AddAsync(invoiceEntity);
@@ -57,7 +60,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             Debug.WriteLine(ex.Message);
             return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
         }
-    } 
+    }
 
     public async Task<InvoiceResult<IEnumerable<Invoice>>> GetAllAsync()
     {
@@ -144,7 +147,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 404, Error = $"Invoice with id '{formData.Id}' not found." };
 
             var updatedInvoice = existingInvoice.Result.MapTo<InvoiceEntity>();
-            
+
             updatedInvoice.InvoiceNumber = formData.InvoiceNumber;
             updatedInvoice.IssuedDate = formData.IssuedDate;
             updatedInvoice.DueDate = formData.DueDate;
@@ -156,6 +159,9 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             updatedInvoice.BillToAddress = formData.BillToAddress;
             updatedInvoice.BillToEmail = formData.BillToEmail;
             updatedInvoice.BillToPhone = formData.BillToPhone;
+            updatedInvoice.UserId = formData.UserId;
+            updatedInvoice.BookingId = formData.BookingId;
+            updatedInvoice.EventId = formData.EventId;
 
             var existingItems = formData.Items;
 

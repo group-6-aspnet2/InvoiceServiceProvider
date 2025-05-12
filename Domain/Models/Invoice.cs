@@ -22,5 +22,9 @@ public class Invoice
 
     public List<InvoiceItem> Items { get; set; } = [];
 
+    public string UserId { get; set; } = null!;
+    public string BookingId { get; set; } = null!;
+    public string EventId { get; set; } = null!;
+
     public decimal Total => Items?.Sum(i => i.Amount) ?? 0;
 }
