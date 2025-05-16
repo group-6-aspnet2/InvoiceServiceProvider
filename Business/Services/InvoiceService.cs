@@ -14,7 +14,6 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
     private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
     private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
 
-
     public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoiceFormData formData)
     {
         try
