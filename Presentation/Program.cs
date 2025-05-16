@@ -12,6 +12,20 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddGrpc();
 
+builder.WebHost.ConfigureKestrel(x =>
+{
+    x.ListenAnyIP(5299, listenOption =>
+    {
+        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+
+    x.ListenAnyIP(7239, listenOption =>
+    {
+        listenOption.UseHttps();
+        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+});
+
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
 
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
