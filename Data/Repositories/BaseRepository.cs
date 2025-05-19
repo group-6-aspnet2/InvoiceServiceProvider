@@ -30,6 +30,12 @@ public abstract class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity,
             await _context.SaveChangesAsync();
             return new RepositoryResult<TModel> { Succeeded = true, StatusCode = 200 };
         }
+        catch (DbUpdateException dbEx)
+        {
+            var sqlError = dbEx.InnerException?.Message ?? dbEx.Message;
+            Debug.WriteLine("EFCore Save error: " + sqlError);
+            return new RepositoryResult<TModel> { Succeeded = false, StatusCode = 500, Error = sqlError };
+        }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
@@ -124,6 +130,12 @@ public abstract class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity,
             var updatedModel = entity.MapTo<TModel>();
             return new RepositoryResult<TModel> { Succeeded = true, StatusCode = 200, Result = updatedModel };
         }
+        catch (DbUpdateException dbEx)
+        {
+            var sqlError = dbEx.InnerException?.Message ?? dbEx.Message;
+            Debug.WriteLine("EFCore Save error: " + sqlError);
+            return new RepositoryResult<TModel> { Succeeded = false, StatusCode = 500, Error = sqlError };
+        }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
@@ -141,6 +153,12 @@ public abstract class BaseRepository<TEntity, TModel> : IBaseRepository<TEntity,
             _table.Remove(entity);
             await _context.SaveChangesAsync();
             return new RepositoryResult<bool> { Succeeded = true, StatusCode = 204 };
+        }
+        catch (DbUpdateException dbEx)
+        {
+            var sqlError = dbEx.InnerException?.Message ?? dbEx.Message;
+            Debug.WriteLine("EFCore Save error: " + sqlError);
+            return new RepositoryResult<bool> { Succeeded = false, StatusCode = 500, Error = sqlError };
         }
         catch (Exception ex)
         {

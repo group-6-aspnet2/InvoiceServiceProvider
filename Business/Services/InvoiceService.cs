@@ -21,9 +21,11 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             if (formData == null)
                 return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
 
+            var newInvoiceId = Guid.NewGuid().ToString();
+
             var invoiceEntity = new InvoiceEntity
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = newInvoiceId,
                 InvoiceNumber = formData.InvoiceNumber,
                 IssuedDate = formData.IssuedDate,
                 DueDate = formData.DueDate,
@@ -39,6 +41,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 InvoiceItems = [.. formData.Items.Select(i => new InvoiceItemEntity
                 {
                     Id = Guid.NewGuid().ToString(),
+                    InvoiceId = newInvoiceId,
                     TicketCategory = i.TicketCategory,
                     Price = i.Price,
                     Quantity = i.Quantity
