@@ -39,8 +39,8 @@ builder.Services.AddSingleton<ServiceBusClient>(provider =>
     return new ServiceBusClient(configuration["AzureServiceBusSettings:ConnectionString"]);
 });
 
-builder.Services.AddHostedService<CreateInvoiceQueueBackgroundService>();
-builder.Services.AddScoped<IInvoiceServiceBusHandler, InvoiceServiceBusHandler>();
+builder.Services.AddHostedService<InvoiceQueueBackgroundService>();
+builder.Services.AddScoped<IUpdateBookingWithInvoiceIdHandler, UpdateBookingWithInvoiceIdHandler>();
 
 var app = builder.Build();
 

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+option csharp_namespace = "Business";
+
+package booking;
+import "google/protobuf/timestamp.proto";
+
+
+service BookingManager {
+  rpc GetBookings (GetBookingsRequest) returns (GetBookingsReply); // admin
+  rpc GetBookingsByEventId (GetBookingsByEventIdRequest) returns (GetBookingsByEventIdReply); // admin
+  rpc GetBookingsByUserId (GetBookingsByUserIdRequest) returns (GetBookingsByUserIdReply); // admin och user om userId är samma som bokningens userId
+  rpc GetOneBooking (GetOneBookingRequest) returns (GetOneBookingReply); // admin och user (om userid är samma som bookingens userid))
+  rpc CreateBooking (CreateBookingRequest) returns (CreateBookingReply); // admin och user
+  rpc CancelBooking (CancelBookingRequest) returns (CancelBookingReply); // admin och user, ska finnas??
+  rpc DeleteBooking (DeleteBookingRequest) returns (DeleteBookingReply); // ska finnas??
+
+}
+
+message GetBookingsRequest {
+}
+
+message Booking {
+	string id = 1;
+	string user_id = 2;	
+	string invoice_id = 3;
+	int32 status_id = 4; 
+	string event_id = 5;
+	string ticket_price = 6;
+	int32 ticket_quantity = 7;
+	string ticket_category_name = 8; 
+	google.protobuf.Timestamp create_date = 9;
+}
+
+message GetBookingsReply {
+	bool succeeded = 1;
+	string message = 2;
+	repeated Booking bookings = 3;
+}
+
+message GetBookingsByEventIdRequest{
+	string eventId = 1;
+}
+
+message GetBookingsByEventIdReply{
+	bool succeeded = 1;
+	string message = 2;
+	repeated Booking bookings = 3;
+}
+
+message GetBookingsByUserIdRequest{
+	string userId = 1;
+}
+
+message GetBookingsByUserIdReply{
+	bool succeeded = 1;
+	string message = 2;
+	repeated Booking bookings = 3;
+}
+
+
+message GetOneBookingRequest {
+	string bookingId = 1;
+}
+
+
+message GetOneBookingReply  {
+	bool succeeded = 1;
+	string message = 2;
+	Booking booking = 3;
+}
+
+message CreateBookingRequest{
+	string user_id = 1;	
+	string event_id = 5;
+	string ticket_price = 6;
+	int32 ticket_quantity = 7;
+	string ticket_category_name = 8; 
+}
+
+message CreateBookingReply{
+	bool succeeded = 1;
+	string message = 2;
+	Booking booking = 3; 
+}
+
+message CancelBookingRequest{
+	string id = 1;
+
+}
+
+message CancelBookingReply{
+	bool succeeded = 1;
+	string message = 2;
+	int32 status_code = 3;
+}
+
+message DeleteBookingRequest {
+	string id = 1;
+
+}
+
+message DeleteBookingReply {
+	bool succeeded = 1;
+	string message = 2;
+	int32 status_code = 3;
+}

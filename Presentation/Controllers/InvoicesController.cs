@@ -62,7 +62,7 @@ public class InvoicesController(IInvoiceService invoiceService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateInvoice([FromBody] CreateInvoiceFormData formData)
+    public async Task<IActionResult> CreateInvoice([FromBody] CreateInvoicePayload formData)
     {
         try
         {

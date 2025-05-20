@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+option csharp_namespace = "Business";
+
+package event;
+
+service EventContract {
+  rpc CreateEvent (CreateEventRequest) returns (CreateEventReply);
+  rpc GetEventById (GetEventByIdRequest) returns (GetEventByIdReply);
+  rpc GetAllEvents (GetAllEventsRequest) returns (GetAllEventsReply);
+  rpc UpdateEvent (UpdateEventRequest) returns (UpdateEventReply);
+  rpc DeleteEvent (DeleteEventRequest) returns (DeleteEventReply);
+}
+
+//CREATEEVENT
+message CreateEventRequest {
+  string event_name = 1;
+  string event_category_name = 2;
+  string event_location = 3;
+  string event_date = 4;
+  string event_time = 5;
+  int32 event_amount_of_guests = 6;
+}
+
+message CreateEventReply {
+    bool succeeded = 1;
+    string message = 2;
+    string event_id = 3;
+}
+
+//GETEVENTBYID
+message GetEventByIdRequest {
+  string event_id = 1;
+}
+
+message GetEventByIdReply {
+    bool succeeded = 1;
+    string message = 2;
+    Event event = 3;
+}
+
+//GETALLEVENTS
+message GetAllEventsRequest {}
+
+message GetAllEventsReply {
+    bool succeeded = 1;
+    string message = 2;
+    repeated Event events = 3;
+}
+
+//EVENT
+message Event {
+  string event_id = 1;
+  string event_name = 2;
+  string event_category_name = 3;
+  string event_location = 4;
+    // Datum på formatet "yyyy-MM-dd", exempel: "2025-05-01"
+  string event_date = 5;
+    // Tid på formatet "HH:mm", exempel: "14:30"
+  string event_time = 6;
+  string event_status = 7;
+  int32 event_amount_of_guests = 8;
+}
+
+//UPDATEEVENT
+message UpdateEventRequest {
+  string event_id = 1;
+  string event_name = 2;
+  string event_category_name = 3;
+  string event_location = 4;
+  string event_date = 5;
+  string event_time = 6;
+  string event_status = 7;
+  int32 event_amount_of_guests = 8;
+}
+
+message UpdateEventReply {
+    bool succeeded = 1;
+    string message = 2;
+}
+
+//DELETEEVENT
+message DeleteEventRequest {
+  string event_id = 1;
+}
+
+message DeleteEventReply {
+    bool succeeded = 1;
+    string message = 2;
+}

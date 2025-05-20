@@ -44,13 +44,18 @@ message TicketDetail {
 }
 
 message CreateInvoiceRequest {
-	Invoice invoice = 1;
+	string booking_id = 1;
+	string user_id = 2;
+	string event_id = 3;
+	int32 ticket_quantity = 4;
+	double ticket_price = 5;
+	string ticket_category_name = 6;
 }
 
 message CreateInvoiceReply {
 	bool succeeded = 1;
 	string message = 2;
-	string inovice_id = 3;
+	Invoice invoice = 3;
 }
 
 message GetInvoicesRequest {}

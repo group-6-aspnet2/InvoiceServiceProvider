@@ -23,4 +23,18 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\booking.proto" GrpcServices="Client" />
+	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Protos\event.proto" GrpcServices="Client" />
+	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Protos\account.proto" GrpcServices="Client" />
+	</ItemGroup>
+
 </Project>

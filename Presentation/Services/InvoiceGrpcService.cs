@@ -12,12 +12,28 @@ public class InvoiceGrpcService(IInvoiceService invoiceService) : InvoiceManager
     {
         try
         {
-            var invoice = request.Invoice;
-            var formData = new CreateInvoiceFormData
+            var payload = new CreateInvoicePayload
             {
+                BookingId = request.BookingId,
+                UserId = request.UserId,
+                EventId = request.EventId,
+                TicketQuantity = request.TicketQuantity,
+                TicketPrice = (decimal)request.TicketPrice,
+                TicketCategoryName = request.TicketCategoryName
+            };
+
+            var result = await _invoiceService.CreateInvoiceAsync(payload);
+
+            if (!result.Succeeded)
+                return new CreateInvoiceReply { Succeeded = false, Message = result.Error ?? "Unknown error." };
+
+            var invoice = result.Result!;
+            var proto = new Invoice
+            {
+                InvoiceId = invoice.Id,
                 InvoiceNumber = invoice.InvoiceNumber,
-                IssuedDate = DateTime.Parse(invoice.IssuedDate),
-                DueDate = DateTime.Parse(invoice.DueDate),
+                IssuedDate = invoice.IssuedDate.ToString(),
+                DueDate = invoice.DueDate.ToString(),
                 BillFromName = invoice.BillFromName,
                 BillFromAddress = invoice.BillFromAddress,
                 BillFromEmail = invoice.BillFromEmail,
@@ -26,19 +42,24 @@ public class InvoiceGrpcService(IInvoiceService invoiceService) : InvoiceManager
                 BillToAddress = invoice.BillToAddress,
                 BillToEmail = invoice.BillToEmail,
                 BillToPhone = invoice.BillToPhone,
-                Items = [.. invoice.TicketDetails.Select(item => new InvoiceItemFormData
-            {
-                TicketCategory = item.TicketCategory,
-                Price = (decimal)item.Price,
-                Quantity = item.Quantity
-            })],
+                Status = invoice.InvoiceStatus,
+                TicketDetails =
+                {
+                    invoice.Items.Select(item => new TicketDetail // TODO: Kolla upp om det är överflödigt med ticket details
+                    {
+                        TicketCategory = item.TicketCategory,
+                        Price = (double)item.Price,
+                        Quantity = item.Quantity,
+                        Amount = (double)item.Amount
+                    })
+                },
                 UserId = invoice.UserId,
                 BookingId = invoice.BookingId,
-                EventId = invoice.EventId
+                EventId = invoice.EventId,
+                Total = (double)invoice.Total
             };
 
-            var result = await _invoiceService.CreateInvoiceAsync(formData);
-            return new CreateInvoiceReply { Succeeded = result.Succeeded, Message = result.Error ?? "", InoviceId = result.Result?.Id ?? "" };
+            return new CreateInvoiceReply { Succeeded = true, Message = "Invoice created successfully.", Invoice = proto };
         }
         catch (Exception ex)
         {

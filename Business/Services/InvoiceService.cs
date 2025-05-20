@@ -5,19 +5,29 @@ using Data.Interfaces;
 using Domain.Extensions;
 using Domain.Models;
 using Domain.Responses;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Business.Services;
 
-public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository) : IInvoiceService
+public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler) : IInvoiceService
 {
     private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
     private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
+    private readonly IUpdateBookingWithInvoiceIdHandler _bookingServiceBusHandler = bookingServiceBusHandler;
+    private readonly BookingManager.BookingManagerClient _bookingClient;
+    private readonly EventContract.EventContractClient _eventClient;
+    private readonly AccountGrpcService.AccountGrpcServiceClient _accountClient;
 
-    public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoiceFormData formData)
+    public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoicePayload formData)
     {
         try
         {
+            var bookingResult = await _bookingClient.GetOneBookingAsync(new GetOneBookingRequest { BookingId = formData.BookingId });
+            var eventResult = await _eventClient.GetEventByIdAsync(new GetEventByIdRequest { EventId = formData.EventId });
+            var accountResult = await _accountClient.GetAccountByIdAsync(new GetAccountByIdRequest { UserId = formData.UserId });
+
             if (formData == null)
                 return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
 
@@ -26,32 +36,40 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             var invoiceEntity = new InvoiceEntity
             {
                 Id = newInvoiceId,
-                InvoiceNumber = formData.InvoiceNumber,
-                IssuedDate = formData.IssuedDate,
-                DueDate = formData.DueDate,
-                BillFromName = formData.BillFromName,
-                BillFromAddress = formData.BillFromAddress,
-                BillFromEmail = formData.BillFromEmail,
-                BillFromPhone = formData.BillFromPhone,
-                BillToName = formData.BillToName,
-                BillToAddress = formData.BillToAddress,
-                BillToEmail = formData.BillToEmail,
-                BillToPhone = formData.BillToPhone,
+                InvoiceNumber = $"INV-{formData.BookingId}",
+                IssuedDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(30),
+                BillFromName = "EPN Sverige AB",
+                BillFromAddress = "Nordkapsvägen 1, 136 57 Vega",
+                BillFromEmail = "epnsverige@domain.com",
+                BillToName = accountResult.Account.UserName, // TODO: Be Olivia lägga till full name i Account
+                //BillToAddress = accountResult.Account.Address, TODO: Be Olivia lägga till address i Account
+                BillToEmail = accountResult.Account.Email,
                 InvoiceStatusId = 1,
-                InvoiceItems = [.. formData.Items.Select(i => new InvoiceItemEntity
+                InvoiceItems = [ new InvoiceItemEntity // TODO: Se om denna casten är korrekt?
                 {
                     Id = Guid.NewGuid().ToString(),
                     InvoiceId = newInvoiceId,
-                    TicketCategory = i.TicketCategory,
-                    Price = i.Price,
-                    Quantity = i.Quantity
-                })],
+                    TicketCategory = formData.TicketCategoryName,
+                    Price = 100,
+                    Quantity = 1
+                }],
                 UserId = formData.UserId,
                 BookingId = formData.BookingId,
                 EventId = formData.EventId
             };
 
             var result = await _invoiceRepository.AddAsync(invoiceEntity);
+            if (result.Succeeded)
+            {
+                var payload = JsonSerializer.Serialize(new UpdateBookingPayload
+                {
+                    BookingId = formData.BookingId,
+                    InvoiceId = "234-45564",
+                });
+
+                await _bookingServiceBusHandler.PublishAsync(payload);
+            }
 
             return result.Succeeded
                 ? new InvoiceResult<Invoice> { Succeeded = true, StatusCode = result.StatusCode, Result = result.Result }
