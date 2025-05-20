@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus;
 using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
@@ -26,11 +27,20 @@ builder.WebHost.ConfigureKestrel(x =>
     });
 });
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
 
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IInvoiceStatusRepository, InvoiceStatusRepository>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+
+builder.Services.AddSingleton<ServiceBusClient>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new ServiceBusClient(configuration["AzureServiceBusSettings:ConnectionString"]);
+});
+
+builder.Services.AddHostedService<CreateInvoiceQueueBackgroundService>();
+builder.Services.AddScoped<IInvoiceServiceBusHandler, InvoiceServiceBusHandler>();
 
 var app = builder.Build();
 
