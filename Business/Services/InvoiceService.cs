@@ -42,9 +42,11 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 BillFromName = "EPN Sverige AB",
                 BillFromAddress = "Nordkapsvägen 1, 136 57 Vega",
                 BillFromEmail = "epnsverige@domain.com",
+                BillFromPhone = "+46 707 123 4567",
                 BillToName = accountResult.Account.UserName, // TODO: Be Olivia lägga till full name i Account
                 //BillToAddress = accountResult.Account.Address, TODO: Be Olivia lägga till address i Account
                 BillToEmail = accountResult.Account.Email,
+                BillToPhone = accountResult.Account.PhoneNumber,
                 InvoiceStatusId = 1,
                 InvoiceItems = [ new InvoiceItemEntity // TODO: Se om denna casten är korrekt?
                 {
