@@ -14,6 +14,7 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy("AllowFrontend", policy =>
        policy
         .WithOrigins(
+           "http://localhost:5173",
            "https://localhost:5173",
            "https://invoiceserviceprovider-app.azurewebsites.net"
         )
@@ -57,15 +58,16 @@ builder.Services.AddScoped<IUpdateBookingWithInvoiceIdHandler, UpdateBookingWith
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-app.MapGrpcService<InvoiceGrpcService>();
-
-app.MapOpenApi();
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+app.MapGrpcService<InvoiceGrpcService>();
+app.MapOpenApi();
 
 app.Run();
