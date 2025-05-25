@@ -9,19 +9,19 @@ using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(opts =>
-{
-    opts.AddPolicy("AllowFrontend", policy =>
-       policy
-        .WithOrigins(
-           "http://localhost:5173",
-           "https://localhost:5173",
-           "https://invoiceserviceprovider-app.azurewebsites.net"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-    );
-});
+//builder.Services.AddCors(opts =>
+//{
+//    opts.AddPolicy("AllowFrontend", policy =>
+//       policy
+//        .WithOrigins(
+//           "http://localhost:5173",
+//           "https://localhost:5173",
+//           "https://invoiceserviceprovider-app.azurewebsites.net"
+//        )
+//        .AllowAnyHeader()
+//        .AllowAnyMethod()
+//    );
+//});
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -60,7 +60,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowFrontend");
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseAuthentication();
 app.UseAuthorization();
