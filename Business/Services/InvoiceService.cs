@@ -1,27 +1,24 @@
 ﻿using Business.Interfaces;
 using Business.Models;
-using Data.Contexts;
 using Data.Entities;
 using Data.Interfaces;
 using Domain.Extensions;
 using Domain.Models;
 using Domain.Responses;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text.Json;
 
 namespace Business.Services;
 
-public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler, BookingManager.BookingManagerClient bookingClient, EventContract.EventContractClient eventClient, AccountGrpcService.AccountGrpcServiceClient accountClient) : IInvoiceService
+public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler) : IInvoiceService
 {
-
     private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
     private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
     private readonly IUpdateBookingWithInvoiceIdHandler _bookingServiceBusHandler = bookingServiceBusHandler;
-    private readonly BookingManager.BookingManagerClient _bookingClient = bookingClient;
-    private readonly EventContract.EventContractClient _eventClient = eventClient;
-    private readonly AccountGrpcService.AccountGrpcServiceClient _accountClient = accountClient;
+    private readonly BookingManager.BookingManagerClient _bookingClient;
+    private readonly EventContract.EventContractClient _eventClient;
+    private readonly AccountGrpcService.AccountGrpcServiceClient _accountClient;
 
     public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoicePayload formData)
     {
@@ -89,25 +86,6 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
 
     public async Task<InvoiceResult<IEnumerable<Invoice>>> GetAllAsync()
     {
-        //try
-        //{
-        //    var entities = await _context.Invoices
-        //        .Include(i => i.InvoiceStatus)
-        //        .Include(i => i.InvoiceItems)
-        //        .OrderByDescending(i => i.IssuedDate)
-        //        .ToListAsync();
-
-        //    var models = entities.Select(MapEntityToModel).ToList();
-
-        //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = 200, Result = models };
-        //}
-        //catch (Exception ex)
-        //{
-        //    Debug.WriteLine(ex.Message);
-        //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
-        //}
-
-
         try
         {
             var result = await _invoiceRepository.GetAllAsync(
@@ -132,27 +110,6 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
 
     public async Task<InvoiceResult<Invoice>> GetByIdAsync(string id)
     {
-        //try
-        //{
-        //    var entity = await _context.Invoices
-        //        .Include(i => i.InvoiceStatus)
-        //        .Include(i => i.InvoiceItems)
-        //        .FirstOrDefaultAsync(i => i.Id == id);
-
-        //    if (entity == null)
-        //        return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 404, Error = $"Invoice with id '{id}' not found." };
-
-        //    var model = MapEntityToModel(entity);
-
-        //    return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = 200, Result = model };
-        //}
-        //catch (Exception ex)
-        //{
-        //    Debug.WriteLine(ex.Message);
-        //    return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
-        //}
-
-
         try
         {
             var result = await _invoiceRepository.GetAsync(
@@ -305,6 +262,49 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             return new InvoiceResult { Succeeded = false, StatusCode = 500, Error = ex.Message };
         }
     }
+
+}
+
+    //try
+    //{
+    //    var entities = await _context.Invoices
+    //        .Include(i => i.InvoiceStatus)
+    //        .Include(i => i.InvoiceItems)
+    //        .OrderByDescending(i => i.IssuedDate)
+    //        .ToListAsync();
+
+    //    var models = entities.Select(MapEntityToModel).ToList();
+
+    //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = 200, Result = models };
+    //}
+    //catch (Exception ex)
+    //{
+    //    Debug.WriteLine(ex.Message);
+    //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+    //}
+
+
+    //try
+    //{
+    //    var entity = await _context.Invoices
+    //        .Include(i => i.InvoiceStatus)
+    //        .Include(i => i.InvoiceItems)
+    //        .FirstOrDefaultAsync(i => i.Id == id);
+
+    //    if (entity == null)
+    //        return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 404, Error = $"Invoice with id '{id}' not found." };
+
+    //    var model = MapEntityToModel(entity);
+
+    //    return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = 200, Result = model };
+    //}
+    //catch (Exception ex)
+    //{
+    //    Debug.WriteLine(ex.Message);
+    //    return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+    //}
+
+
 
 
     //private Domain.Models.Invoice MapEntityToModel(Data.Entities.InvoiceEntity e)
