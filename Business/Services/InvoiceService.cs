@@ -93,7 +93,9 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 sortBy: i => i.IssuedDate,
                 where: null,
                 take: 0,
-                includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
+                include => include.InvoiceItems,
+                includes => includes.InvoiceStatus
+                //: [x => x.InvoiceItems, x => x.InvoiceStatus]
                 );
 
             if (!result.Succeeded)
@@ -114,7 +116,9 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
         {
             var result = await _invoiceRepository.GetAsync(
                 where: i => i.Id == id,
-                includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
+                include => include.InvoiceItems,
+                includes => includes.InvoiceStatus
+                //[x => x.InvoiceItems, x => x.InvoiceStatus]
                 );
 
             if (!result.Succeeded)
