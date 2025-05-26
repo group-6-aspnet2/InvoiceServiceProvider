@@ -13,15 +13,26 @@ using System.Text.Json;
 
 namespace Business.Services;
 
-public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler, DataContext context) : IInvoiceService
+public class InvoiceService : IInvoiceService
 {
     private readonly DataContext _context;
-    private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
-    private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
-    private readonly IUpdateBookingWithInvoiceIdHandler _bookingServiceBusHandler = bookingServiceBusHandler;
+    private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IInvoiceStatusRepository _invoiceStatusRepository;
+    private readonly IUpdateBookingWithInvoiceIdHandler _bookingServiceBusHandler;
     private readonly BookingManager.BookingManagerClient _bookingClient;
     private readonly EventContract.EventContractClient _eventClient;
     private readonly AccountGrpcService.AccountGrpcServiceClient _accountClient;
+
+    public InvoiceService(DataContext context, IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler, BookingManager.BookingManagerClient bookingClient, EventContract.EventContractClient eventClient, AccountGrpcService.AccountGrpcServiceClient accountClient)
+    {
+        _context = context;
+        _invoiceRepository = invoiceRepository;
+        _invoiceStatusRepository = invoiceStatusRepository;
+        _bookingServiceBusHandler = bookingServiceBusHandler;
+        _bookingClient = bookingClient;
+        _eventClient = eventClient;
+        _accountClient = accountClient;
+    }
 
     public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoicePayload formData)
     {
