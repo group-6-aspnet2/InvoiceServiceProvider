@@ -327,7 +327,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             InvoiceStatus = e.InvoiceStatus?.StatusName ?? "Unknown",
             UserId = e.UserId,
             BookingId = e.BookingId,
-            EventId = e.EventId
+            EventId = e.EventId,
             Items = e.InvoiceItems.Select(i => new Domain.Models.InvoiceItem
             {
                 Id = i.Id,
