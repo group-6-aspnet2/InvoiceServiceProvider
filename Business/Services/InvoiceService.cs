@@ -100,87 +100,87 @@ public class InvoiceService : IInvoiceService
 
     public async Task<InvoiceResult<IEnumerable<Invoice>>> GetAllAsync()
     {
-        try
-        {
-            var entities = await _context.Invoices
-                .Include(i => i.InvoiceStatus)
-                .Include(i => i.InvoiceItems)
-                .OrderByDescending(i => i.IssuedDate)
-                .ToListAsync();
-
-            var models = entities.Select(MapEntityToModel).ToList();
-
-            return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = 200, Result = models };
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
-        }
-
-
         //try
         //{
-        //    //var result = await _invoiceRepository.GetAllAsync(
-        //    //    orderByDescending: true,
-        //    //    sortBy: i => i.IssuedDate,
-        //    //    where: null,
-        //    //    take: 0,
-        //    //    includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
-        //    //    );
+        //    var entities = await _context.Invoices
+        //        .Include(i => i.InvoiceStatus)
+        //        .Include(i => i.InvoiceItems)
+        //        .OrderByDescending(i => i.IssuedDate)
+        //        .ToListAsync();
 
-        //    if (!result.Succeeded)
-        //        return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = result.StatusCode, Error = result.Error };
+        //    var models = entities.Select(MapEntityToModel).ToList();
 
-        //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = result.StatusCode, Result = result.Result };
+        //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = 200, Result = models };
         //}
         //catch (Exception ex)
         //{
         //    Debug.WriteLine(ex.Message);
         //    return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
         //}
-    }
 
-    public async Task<InvoiceResult<Invoice>> GetByIdAsync(string id)
-    {
+
         try
         {
-            var entity = await _context.Invoices
-                .Include(i => i.InvoiceStatus)
-                .Include(i => i.InvoiceItems)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var result = await _invoiceRepository.GetAllAsync(
+                orderByDescending: true,
+                sortBy: i => i.IssuedDate,
+                where: null,
+                take: 0,
+                includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
+                );
 
-            if (entity == null)
-                return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 404, Error = $"Invoice with id '{id}' not found." };
+            if (!result.Succeeded)
+                return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = result.StatusCode, Error = result.Error };
 
-            var model = MapEntityToModel(entity);
-
-            return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = 200, Result = model };
+            return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = true, StatusCode = result.StatusCode, Result = result.Result };
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+            return new InvoiceResult<IEnumerable<Invoice>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
         }
+    }
 
-
+    public async Task<InvoiceResult<Invoice>> GetByIdAsync(string id)
+    {
         //try
         //{
-        //    var result = await _invoiceRepository.GetAsync(
-        //        where: i => i.Id == id,
-        //        includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
-        //        );
+        //    var entity = await _context.Invoices
+        //        .Include(i => i.InvoiceStatus)
+        //        .Include(i => i.InvoiceItems)
+        //        .FirstOrDefaultAsync(i => i.Id == id);
 
-        //    if (!result.Succeeded)
-        //        return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = result.StatusCode, Error = result.Error };
+        //    if (entity == null)
+        //        return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 404, Error = $"Invoice with id '{id}' not found." };
 
-        //    return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = result.StatusCode, Result = result.Result };
+        //    var model = MapEntityToModel(entity);
+
+        //    return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = 200, Result = model };
         //}
         //catch (Exception ex)
         //{
         //    Debug.WriteLine(ex.Message);
         //    return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
         //}
+
+
+        try
+        {
+            var result = await _invoiceRepository.GetAsync(
+                where: i => i.Id == id,
+                includes: [x => x.InvoiceItems, x => x.InvoiceStatus]
+                );
+
+            if (!result.Succeeded)
+                return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = result.StatusCode, Error = result.Error };
+
+            return new InvoiceResult<Invoice> { Succeeded = true, StatusCode = result.StatusCode, Result = result.Result };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+        }
     }
 
     public async Task<InvoiceResult<IEnumerable<Invoice>>> GetByStatusIdAsync(int statusId)
@@ -318,35 +318,35 @@ public class InvoiceService : IInvoiceService
     }
 
 
-    private Domain.Models.Invoice MapEntityToModel(Data.Entities.InvoiceEntity e)
-    {
-        return new Domain.Models.Invoice
-        {
-            Id = e.Id,
-            InvoiceNumber = e.InvoiceNumber,
-            IssuedDate = e.IssuedDate,
-            DueDate = e.DueDate,
-            BillFromName = e.BillFromName,
-            BillFromAddress = e.BillFromAddress,
-            BillFromEmail = e.BillFromEmail,
-            BillFromPhone = e.BillFromPhone,
-            BillToName = e.BillToName,
-            BillToAddress = e.BillToAddress,
-            BillToEmail = e.BillToEmail,
-            BillToPhone = e.BillToPhone,
-            InvoiceStatusId = e.InvoiceStatusId,
-            InvoiceStatus = e.InvoiceStatus?.StatusName ?? "Unknown",
-            UserId = e.UserId,
-            BookingId = e.BookingId,
-            EventId = e.EventId,
-            Items = e.InvoiceItems.Select(i => new Domain.Models.InvoiceItem
-            {
-                Id = i.Id,
-                TicketCategory = i.TicketCategory,
-                Price = i.Price,
-                Quantity = i.Quantity
-            })
-            .ToList()
-        };
-    }
+    //private Domain.Models.Invoice MapEntityToModel(Data.Entities.InvoiceEntity e)
+    //{
+    //    return new Domain.Models.Invoice
+    //    {
+    //        Id = e.Id,
+    //        InvoiceNumber = e.InvoiceNumber,
+    //        IssuedDate = e.IssuedDate,
+    //        DueDate = e.DueDate,
+    //        BillFromName = e.BillFromName,
+    //        BillFromAddress = e.BillFromAddress,
+    //        BillFromEmail = e.BillFromEmail,
+    //        BillFromPhone = e.BillFromPhone,
+    //        BillToName = e.BillToName,
+    //        BillToAddress = e.BillToAddress,
+    //        BillToEmail = e.BillToEmail,
+    //        BillToPhone = e.BillToPhone,
+    //        InvoiceStatusId = e.InvoiceStatusId,
+    //        InvoiceStatus = e.InvoiceStatus?.StatusName ?? "Unknown",
+    //        UserId = e.UserId,
+    //        BookingId = e.BookingId,
+    //        EventId = e.EventId,
+    //        Items = e.InvoiceItems.Select(i => new Domain.Models.InvoiceItem
+    //        {
+    //            Id = i.Id,
+    //            TicketCategory = i.TicketCategory,
+    //            Price = i.Price,
+    //            Quantity = i.Quantity
+    //        })
+    //        .ToList()
+    //    };
+    //}
 }

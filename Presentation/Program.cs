@@ -1,4 +1,5 @@
 using Azure.Messaging.ServiceBus;
+using Business;
 using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
@@ -8,20 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-//builder.Services.AddCors(opts =>
-//{
-//    opts.AddPolicy("AllowFrontend", policy =>
-//       policy
-//        .WithOrigins(
-//           "http://localhost:5173",
-//           "https://localhost:5173",
-//           "https://invoiceserviceprovider-app.azurewebsites.net"
-//        )
-//        .AllowAnyHeader()
-//        .AllowAnyMethod()
-//    );
-//});
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
