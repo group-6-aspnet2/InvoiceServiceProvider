@@ -89,7 +89,7 @@ InvoiceService also publishes messages to Azure Service Bus for asynchronous int
 ### Swagger UI
 
 Open in browser:  
-'https://localhost:<port>/swagger'
+`https://localhost:<port>/swagger`
 
 ## Testing
 
