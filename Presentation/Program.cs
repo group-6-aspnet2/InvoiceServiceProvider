@@ -6,7 +6,9 @@ using Data.Contexts;
 using Data.Interfaces;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Presentation.Services;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +29,39 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddGrpc();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1.0",
+        Title = "Invoice Service API Documentation",
+        Description = "Official documentation for Invoice Service Provider API."
+    });
+    o.EnableAnnotations();
+    o.ExampleFilters();
+
+    var apiScheme = new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "X-API-KEY",
+        Description = "API Key for accessing the Invoice Service API",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme",
+        Reference = new OpenApiReference
+        {
+            Id = "ApiKey",
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    o.AddSecurityDefinition("ApiKey", apiScheme);
+    o.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { apiScheme, new List<string>() }
+    });
+});
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 
 //builder.WebHost.ConfigureKestrel(x =>

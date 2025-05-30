@@ -9,7 +9,6 @@ using Domain.Responses;
 using Grpc.Core;
 using Moq;
 using System.Linq.Expressions;
-using System.Threading.Channels;
 
 namespace Tests.Services;
 
@@ -95,6 +94,7 @@ public class InvoiceService_Tests
         );
     }
 
+    // Svårt att få detta testet att bli grönt, möjligen pga alla beroenden som ska in från andra microservices, trots hjälp från ChatGTP (blev nog tillslut lite för komplicerat)
     [Fact]
     public async Task CreateInvoiceAsync_ShouldPublishAndReturnSuccess_WhenAddAsyncSucceeds()
     {
@@ -126,8 +126,6 @@ public class InvoiceService_Tests
                 Id = form.BookingId,
                 EventId = form.EventId,
                 UserId = form.UserId,
-                InvoiceId = "inv1",
-                StatusId = 1,
                 TicketCategoryName = form.TicketCategoryName,
                 TicketQuantity = form.TicketQuantity,
                 TicketPrice = form.TicketPrice.ToString()
