@@ -19,7 +19,7 @@
 
 ## Overview
 
-This service provides full CRUD operations and status management for invoices within an event/booking ecosystem. Operations include creating, retrieving (all or by filters), updating, deleting, and changing invoice status.
+This service provides full CRUD operations and status management for invoices within an event/booking ecosystem. Operations include creating, retrieving (all or by filters), updating, and changing invoice status.
 
 ## Features
 
@@ -93,4 +93,4 @@ Open in browser:
 
 ## Testing
 
-Testet with xUnit testing.
+Tested using xUnit testing.
