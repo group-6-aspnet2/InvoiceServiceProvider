@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 
 namespace Tests.Services;
 
+// Hjälp från ChatGPT för några av de mer komplexa testerna
 public class InvoiceService_Tests
 {
     private readonly Mock<IInvoiceRepository> _invoiceRepositoryMock;

@@ -48,7 +48,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 BillToEmail = accountResult.Account.Email,
                 BillToPhone = accountResult.Account.PhoneNumber,
                 InvoiceStatusId = 1,
-                InvoiceItems = [ new InvoiceItemEntity // TODO: Se om denna casten är korrekt?
+                InvoiceItems = [ new InvoiceItemEntity
                 {
                     Id = Guid.NewGuid().ToString(),
                     InvoiceId = newInvoiceId,
