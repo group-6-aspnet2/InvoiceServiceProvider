@@ -1,4 +1,5 @@
 using Azure.Messaging.ServiceBus;
+using Business;
 using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
@@ -43,7 +44,7 @@ builder.Services.AddSwaggerGen();
 //    });
 //});
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
 
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IInvoiceStatusRepository, InvoiceStatusRepository>();

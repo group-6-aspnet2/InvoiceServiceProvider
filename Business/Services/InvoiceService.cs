@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace Business.Services;
 
-public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler) : IInvoiceService
+public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatusRepository invoiceStatusRepository, IUpdateBookingWithInvoiceIdHandler bookingServiceBusHandler, BookingManager.BookingManagerClient bookingClient, EventContract.EventContractClient eventClient, AccountGrpcService.AccountGrpcServiceClient accountClient) : IInvoiceService
 {
     private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
     private readonly IInvoiceStatusRepository _invoiceStatusRepository = invoiceStatusRepository;
@@ -22,14 +22,14 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
 
     public async Task<InvoiceResult<Invoice>> CreateInvoiceAsync(CreateInvoicePayload formData)
     {
+        if (formData == null)
+            return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
+
         try
         {
             var bookingResult = await _bookingClient.GetOneBookingAsync(new GetOneBookingRequest { BookingId = formData.BookingId });
             var eventResult = await _eventClient.GetEventByIdAsync(new GetEventByIdRequest { EventId = formData.EventId });
             var accountResult = await _accountClient.GetAccountByIdAsync(new GetAccountByIdRequest { UserId = formData.UserId });
-
-            if (formData == null)
-                return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
 
             var newInvoiceId = Guid.NewGuid().ToString();
 
@@ -44,7 +44,7 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
                 BillFromEmail = "epnsverige@domain.com",
                 BillFromPhone = "+46 707 123 4567",
                 BillToName = accountResult.Account.UserName, // TODO: Be Olivia lägga till full name i Account
-                //BillToAddress = accountResult.Account.Address, TODO: Be Olivia lägga till address i Account
+                // BillToAddress = accountResult.Account.Address, // TODO: Be Olivia lägga till address i Account
                 BillToEmail = accountResult.Account.Email,
                 BillToPhone = accountResult.Account.PhoneNumber,
                 InvoiceStatusId = 1,
@@ -155,11 +155,11 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
 
     public async Task<InvoiceResult<Invoice>> UpdateAsync(UpdateInvoiceFormData formData)
     {
+        if (formData == null)
+            return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
+
         try
         {
-            if (formData == null)
-                return new InvoiceResult<Invoice> { Succeeded = false, StatusCode = 400, Error = "Invalid invoice form." };
-
             var existingInvoice = await _invoiceRepository.GetAsync(
                 x => x.Id == formData.Id,
                 includes: x => x.InvoiceItems
@@ -262,7 +262,6 @@ public class InvoiceService(IInvoiceRepository invoiceRepository, IInvoiceStatus
             return new InvoiceResult { Succeeded = false, StatusCode = 500, Error = ex.Message };
         }
     }
-
 }
 
     //try

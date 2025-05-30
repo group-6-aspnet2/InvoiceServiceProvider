@@ -1,9 +1,11 @@
 ﻿using Business.Interfaces;
 using Business.Models;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Extensions.Attributes;
 
 namespace Presentation.Controllers;
 
+[UseApiKey]
 [Route("api/[controller]")]
 [ApiController]
 public class InvoicesController(IInvoiceService invoiceService) : ControllerBase
